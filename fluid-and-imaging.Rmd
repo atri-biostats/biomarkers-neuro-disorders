@@ -27,9 +27,9 @@ University of Southern California
 
 ### Biomarkers for Neurodegenerative Disorders
 
-Gothenburg, Sweden
+London, UK
 
-May 2024
+May 2025
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 # renv::activate() # to active renv
@@ -38,7 +38,6 @@ May 2024
 # install.packages(file.path(renv:::renv_paths_cellar(), 'package_file.tar.gz'), repos = NULL)
 # devtools::install_url('https://cran.rstudio.com/src/contrib/Archive/calibFit/calibFit_2.1.0.tar.gz')
 # remotes::install_github('atrihub/SRS')
-# remotes::install_github("gadenbuie/xaringanExtra")
 # For ADNIMERGE, go to http://adni.loni.usc.edu/, https://adni.bitbucket.io/
 
 library(Hmisc)
