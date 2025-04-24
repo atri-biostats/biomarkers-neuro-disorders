@@ -32,10 +32,6 @@ London, UK
 May 2025
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
-# renv::activate() # to active renv
-# renv::restore() # to update packages according to renv.lock file
-# copy any non-CRAN packages to renv:::renv_paths_cellar()
-# install.packages(file.path(renv:::renv_paths_cellar(), 'package_file.tar.gz'), repos = NULL)
 # devtools::install_url('https://cran.rstudio.com/src/contrib/Archive/calibFit/calibFit_2.1.0.tar.gz')
 # remotes::install_github('atrihub/SRS')
 # For ADNIMERGE, go to http://adni.loni.usc.edu/, https://adni.bitbucket.io/
@@ -161,7 +157,7 @@ Emphases:
 
 - Visualization 
 - Demonstrations using R, code available from:
-  - [https://github.com/atrihub/biomarkers-neuro-disorders](https://github.com/atrihub/biomarkers-neuro-disorders)
+  - [https://github.com/atri-biostats/biomarkers-neuro-disorders](https://github.com/atri-biostats/biomarkers-neuro-disorders)
 ]
 
 ---
@@ -181,8 +177,10 @@ Emphases:
   - Bivariate
 - Mixture of Experts (Unsupervised Learning with covariates)
 - Reference Regions
-- Centiloids
-- Harmonization using the Empirical Cumulative Distribution Function (ECDF)
+- Harmonization using:
+  - Centiloids
+  - Empirical Cumulative Distribution Function (ECDF)
+  - ComBat
 ]
 
 ---
@@ -842,6 +840,47 @@ Sensitivity is a measure of how well we are detecting positive cases
 Specificity is a measure of how well we are detecting controls or negative cases
 
 Youden's index gives equal weight to false positives and false negatives (not necessarily appropriate)
+
+---
+
+# Same AUCs do not imply same performance 
+
+.pull-left[
+
+```{r ROC_same, fig.width=5, fig.height=5}
+f1 <- function(x){
+  unlist(lapply(x, function(y){
+    if(y<0.5) return(0)
+    if(y>=0.5) return(y) 
+  }))
+}
+
+set.seed(20250423)
+roc_same_auc <- tibble(x = seq(0,1, length = 10000)) %>%
+  mutate(p1 = f1(x)) %>%
+  rowwise() %>%
+  mutate(Label1 = sample(c('A', 'B'), size = 1, prob = c(p1, 1-p1)))
+roc_same_auc$Label2 <- rev(roc_same_auc$Label1)
+roc_same_auc$Label2 <- ifelse(roc_same_auc$Label2 == 'B', 'A', 'B')
+
+roc_1 <- roc(Label1 ~ x, roc_same_auc)
+roc_2 <- roc(Label2 ~ x, roc_same_auc)
+plot(roc_1, print.thres="best", print.thres.best.method="youden")
+plot(roc_2, add=TRUE, col='orange', print.thres="best",
+  print.thres.best.method="youden")
+```
+
+]
+
+.pull-right[
+
+AUC1 = AUC2 = `r roc_1$auc` in this case, with 95% CI ( `r ci(roc_1)[c(1,3)]` )
+
+Both show good overall performance with AUC close to one.
+
+However, one attains 80% sensitivity and 100% specificity, while the other attains the opposite (100% sensitivity and 80% specificity).
+
+]
 
 ---
 

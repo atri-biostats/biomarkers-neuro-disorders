@@ -3,7 +3,7 @@
   <head>
     <title>Biostatistics for Fluid and Imaging Biomarkers</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.27/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
     <link href="libs/tile-view-0.2.6/tile-view.css" rel="stylesheet" />
@@ -26,9 +26,9 @@ University of Southern California
 
 ### Biomarkers for Neurodegenerative Disorders
 
-Gothenburg, Sweden
+London, UK
 
-May 2024
+May 2025
 
 
   
@@ -63,7 +63,7 @@ Emphases:
 
 - Visualization 
 - Demonstrations using R, code available from:
-  - [https://github.com/atrihub/biomarkers-neuro-disorders](https://github.com/atrihub/biomarkers-neuro-disorders)
+  - [https://github.com/atri-biostats/biomarkers-neuro-disorders](https://github.com/atri-biostats/biomarkers-neuro-disorders)
 ]
 
 ---
@@ -83,8 +83,10 @@ Emphases:
   - Bivariate
 - Mixture of Experts (Unsupervised Learning with covariates)
 - Reference Regions
-- Centiloids
-- Harmonization using the Empirical Cumulative Distribution Function (ECDF)
+- Harmonization using:
+  - Centiloids
+  - Empirical Cumulative Distribution Function (ECDF)
+  - ComBat
 ]
 
 ---
@@ -691,6 +693,26 @@ Youden's index gives equal weight to false positives and false negatives (not ne
 
 ---
 
+# Same AUCs do not imply same performance 
+
+.pull-left[
+
+&lt;img src="fluid_imaging_fig/ROC_same-1.svg" width="100%"  style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+AUC1 = AUC2 = 0.95 in this case, with 95% CI ( 0.94, 0.95 )
+
+Both show good overall performance with AUC close to one.
+
+However, one attains 80% sensitivity and 100% specificity, while the other attains the opposite (100% sensitivity and 80% specificity).
+
+]
+
+---
+
 # Comparing ROC Curves
 
 .pull-left[
@@ -1053,7 +1075,7 @@ lm_fit1_sex &lt;- lm(I(Hippocampus/ICV*100) ~ Sex, data=dd2)
 
 |Coefficient | Estimate| Std. Error| t value|Pr(&gt;&amp;#124;t&amp;#124;) |
 |:-----------|--------:|----------:|-------:|:------------------|
-|(Intercept) |     0.49|          0|   150.7|&lt;0.001             |
+|(Intercept) |     0.49|          0|   150.8|&lt;0.001             |
 |SexFemale   |     0.04|          0|     9.3|&lt;0.001             |
 
 
@@ -1075,9 +1097,9 @@ lm_fit2_sex &lt;- lm(Hippocampus ~ ICV + Sex, data=dd2)
 
 |Coefficient | Estimate| Std. Error| t value|Pr(&gt;&amp;#124;t&amp;#124;) |
 |:-----------|--------:|----------:|-------:|:------------------|
-|(Intercept) |     4383|        362|   12.12|&lt;0.001             |
+|(Intercept) |     4389|        361|   12.16|&lt;0.001             |
 |ICV         |        0|          0|    9.23|&lt;0.001             |
-|SexFemale   |       37|         73|    0.51|0.61               |
+|SexFemale   |       34|         72|    0.47|0.64               |
 
 
 
@@ -1566,11 +1588,11 @@ Youden, W. J. (1950). "Index for rating diagnostic tests". In: _Cancer_
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "solarized-light",
-"highlightLanguage": ["r", "css", "yaml"],
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "highlightStyle": "solarized-light",
+  "highlightLanguage": ["r", "css", "yaml"],
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
