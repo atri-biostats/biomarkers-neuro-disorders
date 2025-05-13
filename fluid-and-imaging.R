@@ -1,11 +1,6 @@
-## ----setup, echo=FALSE, message=FALSE, warning=FALSE-------------------------------------------------------------------------
-# renv::activate() # to active renv
-# renv::restore() # to update packages according to renv.lock file
-# copy any non-CRAN packages to renv:::renv_paths_cellar()
-# install.packages(file.path(renv:::renv_paths_cellar(), 'package_file.tar.gz'), repos = NULL)
+## ----setup, echo=FALSE, message=FALSE, warning=FALSE------------------------------------------------
 # devtools::install_url('https://cran.rstudio.com/src/contrib/Archive/calibFit/calibFit_2.1.0.tar.gz')
 # remotes::install_github('atrihub/SRS')
-# remotes::install_github("gadenbuie/xaringanExtra")
 # For ADNIMERGE, go to http://adni.loni.usc.edu/, https://adni.bitbucket.io/
 
 library(Hmisc)
@@ -61,15 +56,15 @@ center <- function(x) scale(x, scale = FALSE)
 
 
 
-## ----echo=FALSE, fig.align='center', out.width='57%'-------------------------------------------------------------------------
+## ----echo=FALSE, fig.align='center', out.width='57%'------------------------------------------------
 knitr::include_graphics("./images/atri.png")
 
 
-## ----echo=FALSE, fig.align='center', out.width='47%'-------------------------------------------------------------------------
+## ----echo=FALSE, fig.align='center', out.width='47%'------------------------------------------------
 knitr::include_graphics("./images/actc_logo.png")
 
 
-## ----generate_batch_data-----------------------------------------------------------------------------------------------------
+## ----generate_batch_data----------------------------------------------------------------------------
 # simulated data with batch effects
 set.seed(20200225)
 
@@ -91,13 +86,13 @@ batch_data <-
     Biomarker = ifelse(Biomarker<0, 0, Biomarker))
 
 
-## ----batch_data_plot---------------------------------------------------------------------------------------------------------
+## ----batch_data_plot--------------------------------------------------------------------------------
 ggplot(batch_data, aes(y=Biomarker, x=batch)) +
   geom_boxplot(outlier.shape=NA) +
   geom_dotplot(binaxis='y', stackdir='center', dotsize=0.3, alpha=0.2)
 
 
-## ----batch_data_summaries, results='asis', cache=FALSE-----------------------------------------------------------------------
+## ----batch_data_summaries, results='asis', cache=FALSE----------------------------------------------
 batch_data_sum <- batch_data %>% group_by(batch) %>%
   summarize(
     N=length(Biomarker),
@@ -111,11 +106,11 @@ batch_data_sum %>%
     font_size=18, full_width=FALSE)
 
 
-## ----echo=TRUE, results='markup'---------------------------------------------------------------------------------------------
+## ----echo=TRUE, results='markup'--------------------------------------------------------------------
 anova(lm(Biomarker ~ batch, batch_data))
 
 
-## ----batch_confounds---------------------------------------------------------------------------------------------------------
+## ----batch_confounds--------------------------------------------------------------------------------
 low_groups <- subset(batch_data_sum, Mean<median(batch_data_sum$Mean))$batch
 batch_data <- batch_data %>%
   mutate(Group = ifelse(batch %in% low_groups, 'A', 'B'))
@@ -125,7 +120,7 @@ ggplot(batch_data, aes(y=Biomarker, x=batch)) +
     binaxis='y', stackdir='center', dotsize=0.3, alpha=0.5)
 
 
-## ----batch_randomized--------------------------------------------------------------------------------------------------------
+## ----batch_randomized-------------------------------------------------------------------------------
 batch_data$Group <- sample(batch_data$Group, size=nrow(batch_data))
 ggplot(batch_data, aes(y=Biomarker, x=batch)) +
   geom_boxplot(outlier.shape=NA) +
@@ -133,7 +128,7 @@ ggplot(batch_data, aes(y=Biomarker, x=batch)) +
     binaxis='y', stackdir='center', dotsize=0.3, alpha=0.5)
 
 
-## ----randomization-----------------------------------------------------------------------------------------------------------
+## ----randomization----------------------------------------------------------------------------------
 data(srs_data)
 # head(srs_data)
 
@@ -209,7 +204,7 @@ for(i in 1:nrow(srs_data)){
 }
 
 
-## ----results='asis'----------------------------------------------------------------------------------------------------------
+## ----results='asis'---------------------------------------------------------------------------------
 tr.assignments <- r.obj@tr.assignments %>%
   mutate(
     Treatment = factor(Treatment, levels = r.obj@expt@treatment.names),
@@ -227,7 +222,7 @@ tr.assignments[1:10, ] %>%
     font_size=18, full_width=FALSE)
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 tab <- with(tr.assignments, table(Plate, Age)) %>%
   as.data.frame() %>%
   pivot_wider(names_from='Age', values_from='Freq') %>%
@@ -241,7 +236,7 @@ tab %>%
     font_size=18, full_width=FALSE)
 
 
-## ----calibFit_fits, out.width='100%', fig.height=4, fig.width=4*(2)----------------------------------------------------------
+## ----calibFit_fits, out.width='100%', fig.height=4, fig.width=4*(2)---------------------------------
 data(HPLC)
 data(ELISA)
 
@@ -272,7 +267,7 @@ p2 <- ggplot(ELISA, aes(x=log(Concentration), y=Response)) +
 grid.arrange(p1,p2,nrow=1)
 
 
-## ----calibFit_residuals, out.width='100%', fig.height=4, fig.width=4*(2)-----------------------------------------------------
+## ----calibFit_residuals, out.width='100%', fig.height=4, fig.width=4*(2)----------------------------
 p1 <- ggplot(HPLC, aes(x=Concentration, y=Response-Fitted)) +
   geom_point() +
   geom_hline(yintercept = 0) +
@@ -290,7 +285,7 @@ p2 <- ggplot(ELISA, aes(x=log(Concentration), y=Response-Fitted)) +
 grid.arrange(p1,p2,nrow=1)
 
 
-## ----regression-movie, fig.show='animate', dev='jpeg'------------------------------------------------------------------------
+## ----regression-movie, fig.show='animate', dev='jpeg'-----------------------------------------------
 set.seed(20210524)
 X <- rnorm(200, mean = 2, sd = 0.5)
 e <- rnorm(200, mean = 0, sd = 0.5)
@@ -319,7 +314,7 @@ p <- qplot(x=X, y=Y) +
 print(p)
 
 
-## ----calib_fit---------------------------------------------------------------------------------------------------------------
+## ----calib_fit--------------------------------------------------------------------------------------
 cal.fpl <- with(ELISA, calib.fit(Concentration,Response,type="log.fpl"))
 cal.lin.pom <- with(HPLC, calib.fit(Concentration,Response,type="lin.pom"))
 cal.fpl.pom <- with(ELISA, calib.fit(Concentration,Response,type="log.fpl.pom"))
@@ -337,7 +332,7 @@ linpom.res <- cal.lin.pom@residuals*(1/((linpom.fit^theta.lin)*sig.lin))
 fplpom.res <- cal.fpl.pom@residuals*(1/((fplpom.fit^theta.fpl)*sig.fpl))
 
 
-## ----calibFit_pom_residuals, out.width='100%', fig.height=4, fig.width=4*(2)-------------------------------------------------
+## ----calibFit_pom_residuals, out.width='100%', fig.height=4, fig.width=4*(2)------------------------
 p1 <- ggplot(HPLC, aes(x=linpom.fit, y=linpom.res)) +
   geom_point() +
   geom_hline(yintercept = 0) +
@@ -355,7 +350,7 @@ p2 <- ggplot(ELISA, aes(x=fplpom.fit, y=fplpom.res)) +
 grid.arrange(p1,p2,nrow=1)
 
 
-## ----calib_hplc_pom, fig.height=4.5, fig.width=4.5*2-------------------------------------------------------------------------
+## ----calib_hplc_pom, fig.height=4.5, fig.width=4.5*2------------------------------------------------
 par(mfrow=c(1,2))
 ciu <- fitted(linmodel) + summary(linmodel)$sigma*qt(.975,linmodel$df)
 cil <- fitted(linmodel) - summary(linmodel)$sigma*qt(.975,linmodel$df)
@@ -368,7 +363,7 @@ lines(HPLC$Concentration,cil,col="grey",lty=2)
 plot(cal.lin.pom,print=FALSE,main = "HPLC data fit with POM",xlab = "Concentration", ylab = "Response")
 
 
-## ----calib_elisa_pom, fig.height=4.5, fig.width=4.5*2------------------------------------------------------------------------
+## ----calib_elisa_pom, fig.height=4.5, fig.width=4.5*2-----------------------------------------------
 par(mfrow=c(1,2))
 #par(mar = c(3.5,3.5,1.5,1.5))
 plot(cal.fpl,print=FALSE,main = "ELISA fit without POM",xlab = "Concentration", ylab = "Response")
@@ -377,17 +372,17 @@ plot(cal.fpl,print=FALSE,main = "ELISA fit without POM",xlab = "Concentration", 
 plot(cal.fpl.pom,print=FALSE,main = "ELISA fit with POM",xlab = "Concentration", ylab = "Response")
 
 
-## ----calibrated1, fig.height=4.5, fig.width=4.5, out.width='100%'------------------------------------------------------------
+## ----calibrated1, fig.height=4.5, fig.width=4.5, out.width='100%'-----------------------------------
 calib.lin <- calib(cal.lin.pom, HPLC$Response)
 plot(calib.lin, main="HPLC calribated with linear POM")
 
 
-## ----calibrated2, fig.height=4.5, fig.width=4.5, out.width='100%'------------------------------------------------------------
+## ----calibrated2, fig.height=4.5, fig.width=4.5, out.width='100%'-----------------------------------
 calib.fpl <- calib(cal.fpl.pom, ELISA$Response)
 plot(calib.fpl, main="ELISA calribated with FPL POM")
 
 
-## ----classification, fig.height=4, fig.width=6-------------------------------------------------------------------------------
+## ----classification, fig.height=4, fig.width=6------------------------------------------------------
 dd <- subset(ADNIMERGE::adnimerge, !is.na(ABETA)) %>%
   arrange(RID, EXAMDATE) %>%
   filter(!duplicated(RID)) %>%
@@ -403,19 +398,42 @@ ggplot(dd, aes(x=ABETA, y=TAU)) +
   theme(legend.position = c(0.80,0.75))
 
 
-## ----classification_no_mci---------------------------------------------------------------------------------------------------
+## ----classification_no_mci--------------------------------------------------------------------------
 ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) + 
   geom_point(aes(color=DX2)) +
   scale_color_manual(values=c("#0072B2", "#D55E00"))
 
 
-## ----ROC_abeta, fig.width=5, fig.height=5------------------------------------------------------------------------------------
+## ----ROC_abeta, fig.width=5, fig.height=5-----------------------------------------------------------
 roc_abeta <- roc(DX2 ~ ABETA, subset(dd, DX!='MCI'))
 # ggroc(roc_abeta)
 plot(roc_abeta, print.thres="best", print.thres.best.method="youden")
 
 
-## ----ROC_abeta_tau, fig.width=5, fig.height=5--------------------------------------------------------------------------------
+## ----ROC_same, fig.width=5, fig.height=5------------------------------------------------------------
+f1 <- function(x){
+  unlist(lapply(x, function(y){
+    if(y<0.5) return(0)
+    if(y>=0.5) return(y) 
+  }))
+}
+
+set.seed(20250423)
+roc_same_auc <- tibble(x = seq(0,1, length = 10000)) %>%
+  mutate(p1 = f1(x)) %>%
+  rowwise() %>%
+  mutate(Label1 = sample(c('A', 'B'), size = 1, prob = c(p1, 1-p1)))
+roc_same_auc$Label2 <- rev(roc_same_auc$Label1)
+roc_same_auc$Label2 <- ifelse(roc_same_auc$Label2 == 'B', 'A', 'B')
+
+roc_1 <- roc(Label1 ~ x, roc_same_auc)
+roc_2 <- roc(Label2 ~ x, roc_same_auc)
+plot(roc_1, print.thres="best", print.thres.best.method="youden")
+plot(roc_2, add=TRUE, col='orange', print.thres="best",
+  print.thres.best.method="youden")
+
+
+## ----ROC_abeta_tau, fig.width=5, fig.height=5-------------------------------------------------------
 roc_tau <- roc(DX2 ~ TAU, subset(dd, DX!='MCI'))
 roc_tauabeta <- roc(DX2 ~ I(TAU/ABETA), subset(dd, DX!='MCI'))
 
@@ -429,19 +447,19 @@ legend("bottomright",
 
 
 
-## ----echo=FALSE, eval=FALSE--------------------------------------------------------------------------------------------------
-roc.test(roc_abeta, roc_tau)
-roc.test(roc_abeta, roc_tauabeta)
+## ----echo=FALSE, eval=FALSE-------------------------------------------------------------------------
+# roc.test(roc_abeta, roc_tau)
+# roc.test(roc_abeta, roc_tauabeta)
 
 
-## ----abeta_tau_scatter_youden, fig.height=2.5, fig.width=3*2-----------------------------------------------------------------
+## ----abeta_tau_scatter_youden, fig.height=2.5, fig.width=3*2----------------------------------------
 ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) + 
   geom_point(aes(color=DX2)) +
   scale_color_manual(values=c("#0072B2", "#D55E00")) +
   geom_abline(intercept = 0, slope=0.394)
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 logistic.fit <- glm(DX2 ~ scale(ABETA) + scale(TAU), 
   data = subset(dd, DX!='MCI'), family=binomial)
 summary(logistic.fit)$coef %>%
@@ -451,7 +469,7 @@ summary(logistic.fit)$coef %>%
   kable()
 
 
-## ----logistic_pred_prob------------------------------------------------------------------------------------------------------
+## ----logistic_pred_prob-----------------------------------------------------------------------------
 ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) + 
   geom_point(aes(color=predict(logistic.fit, type='response'))) +
   scale_colour_gradient(low="#0072B2", high="#D55E00") +
@@ -459,7 +477,7 @@ ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) +
   geom_abline(intercept = 0, slope=0.394)
 
 
-## ----ratio_gradient----------------------------------------------------------------------------------------------------------
+## ----ratio_gradient---------------------------------------------------------------------------------
 ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) + 
   geom_point(aes(color=TAU/ABETA)) +
   scale_colour_gradient(low="#0072B2", high="#D55E00") +
@@ -475,7 +493,7 @@ ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) +
   coord_cartesian(xlim=c(200,1700), ylim=c(80,852))
 
 
-## ----ratio_gradient_logistic-------------------------------------------------------------------------------------------------
+## ----ratio_gradient_logistic------------------------------------------------------------------------
 tau_fun <- function(abeta, p){
   # log(p/(1-p)) = y = a + b*abetaz + c*tauz
   # tauz = (y - a - b*abetaz)/c
@@ -503,7 +521,7 @@ ggplot(pd, aes(x=ABETA, y=TAU, color=prob)) +
   coord_cartesian(xlim=c(200,1700), ylim=c(80,852))
 
 
-## ----ROC_logistic, fig.width=5, fig.height=5---------------------------------------------------------------------------------
+## ----ROC_logistic, fig.width=5, fig.height=5--------------------------------------------------------
 roc_logistic.fit <- roc(DX2 ~ predict(logistic.fit, type='response'), subset(dd, DX!='MCI'))
 
 plot(roc_abeta, col='blue')
@@ -516,11 +534,11 @@ legend("bottomright",
 
 
 
-## ----echo=FALSE, eval=FALSE--------------------------------------------------------------------------------------------------
-roc.test(roc_abeta, roc_logistic.fit)
+## ----echo=FALSE, eval=FALSE-------------------------------------------------------------------------
+# roc.test(roc_abeta, roc_logistic.fit)
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 logistic.fit2 <- glm(DX2 ~ scale(ABETA) + scale(TAU) + scale(I(AGE+Years.bl)) + as.factor(APOE4), family=binomial, data = subset(dd, DX!='MCI'))
 summary(logistic.fit2)$coef %>% 
   as_tibble(rownames = NA) %>% 
@@ -529,21 +547,21 @@ summary(logistic.fit2)$coef %>%
   kable()
 
 
-## ----eval=FALSE--------------------------------------------------------------------------------------------------------------
-roc_logistic.fit2 <- roc(DX2 ~ predict(logistic.fit2, type='response'), subset(dd, DX!='MCI'))
-roc.test(roc_abeta, roc_logistic.fit2)
-roc.test(roc_tauabeta, roc_logistic.fit2)
-auc(roc_logistic.fit2); ci(roc_logistic.fit2)
+## ----eval=FALSE-------------------------------------------------------------------------------------
+# roc_logistic.fit2 <- roc(DX2 ~ predict(logistic.fit2, type='response'), subset(dd, DX!='MCI'))
+# roc.test(roc_abeta, roc_logistic.fit2)
+# roc.test(roc_tauabeta, roc_logistic.fit2)
+# auc(roc_logistic.fit2); ci(roc_logistic.fit2)
 
 
-## ----tree1, fig.height=4.5, fig.width=5*(2)----------------------------------------------------------------------------------
+## ----tree1, fig.height=4.5, fig.width=5*(2)---------------------------------------------------------
 tree.fit <- ctree(DX2 ~ ABETA + TAU, 
   data = subset(dd, DX!='MCI'), 
   controls = ctree_control(maxdepth=2))
 plot(tree.fit)
 
 
-## ----tree2-------------------------------------------------------------------------------------------------------------------
+## ----tree2------------------------------------------------------------------------------------------
 ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) + 
   geom_point(aes(color=DX)) +
   scale_color_manual(values=c("#0072B2", "#D55E00")) +
@@ -554,7 +572,7 @@ ggplot(subset(dd, DX!='MCI'), aes(x=ABETA, y=TAU)) +
   geom_segment(aes(x = 886, y = 440, xend = 1700, yend = 440))
 
 
-## ----ROC_rf, fig.width=5, fig.height=5---------------------------------------------------------------------------------------
+## ----ROC_rf, fig.width=5, fig.height=5--------------------------------------------------------------
 tree.fit2 <- ctree(DX2 ~ ABETA + TAU, data = subset(dd, DX!='MCI'))
 tree.fit2.prob.dem <- predict(tree.fit2, type='prob') %>% 
   lapply(function(x) x[2]) %>% unlist()
@@ -576,19 +594,19 @@ legend("bottomright",
     col=c("blue", "orange", "red", "purple", "grey", "black"), lwd=2)
 
 
-## ----echo=FALSE, eval=FALSE--------------------------------------------------------------------------------------------------
-roc.test(roc_abeta, roc_tree.fit)
-roc.test(roc_abeta, roc_rf.fit)
+## ----echo=FALSE, eval=FALSE-------------------------------------------------------------------------
+# roc.test(roc_abeta, roc_tree.fit)
+# roc.test(roc_abeta, roc_rf.fit)
 
 
-## ----density_Abeta, fig.height=2.25, fig.width=3*(2)-------------------------------------------------------------------------
+## ----density_Abeta, fig.height=2.25, fig.width=3*(2)------------------------------------------------
 ggplot(subset(dd, DX!='MCI' & ABETA<1700), aes(x=ABETA)) + 
   geom_histogram(aes(y=..density..), alpha=0.5) +
   geom_density() +
   geom_rug(aes(color=DX))
 
 
-## ----results='hide', cache=TRUE----------------------------------------------------------------------------------------------
+## ----results='hide', cache=TRUE---------------------------------------------------------------------
 #' Plot a Mixture Component
 #' 
 #' @param x Input data
@@ -608,7 +626,7 @@ mvmixmdl <- mvnormalmixEM(subset(dd, DX!='MCI' & ABETA<1700)[, c('ABETA', 'TAU')
 ## number of iterations= 91
 
 
-## ----mixture_distribution_Abeta----------------------------------------------------------------------------------------------
+## ----mixture_distribution_Abeta---------------------------------------------------------------------
 data.frame(ABETA = mixmdl$x) %>%
   ggplot(aes(x=ABETA)) +
   geom_histogram(aes(y=..density..), alpha=0.5) +
@@ -621,7 +639,7 @@ data.frame(ABETA = mixmdl$x) %>%
   ylab("Density")
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 post.df <- as.data.frame(cbind(x = mixmdl$x, mixmdl$posterior)) %>%
   arrange(x) %>% 
   rename(Abeta = x, `Prob. Abnormal` = comp.1, `Prob. Normal` = comp.2)
@@ -631,7 +649,7 @@ post.df %>% filter(Abeta > 1030 & Abeta < 1080) %>% kable()
 # filter(post.df, `Prob. Abnormal` <= `Prob. Normal`)[1,]
 
 
-## ----Bivariate_Density-------------------------------------------------------------------------------------------------------
+## ----Bivariate_Density------------------------------------------------------------------------------
 kd <- with(subset(dd, DX!='MCI' & ABETA<1700)[, c('ABETA', 'TAU')], MASS::kde2d(ABETA, TAU, n = 50))
 fig <- plot_ly(x = kd$x, y = kd$y, z = kd$z) %>% add_surface() %>% layout(
   showlegend = FALSE,
@@ -645,7 +663,7 @@ fig <- plot_ly(x = kd$x, y = kd$y, z = kd$z) %>% add_surface() %>% layout(
 htmlwidgets::saveWidget(fig, "bvdensity_csf_tau.html")
 
 
-## ----bv_kernel_density-------------------------------------------------------------------------------------------------------
+## ----bv_kernel_density------------------------------------------------------------------------------
 kd <- with(subset(dd, DX!='MCI' & ABETA<1700)[, c('ABETA', 'TAU')], MASS::kde2d(ABETA, TAU, n = 50))
 kdl <- expand.grid(i=1:50, j=1:50) %>%
   mutate(Abeta=NA, Tau=NA, density=NA)
@@ -660,7 +678,7 @@ ggplot(kdl, aes(Abeta, Tau, z = density)) +
   geom_contour(color='white')
 
 
-## ----mvmix_post_prob, fig.width=5, fig.height=5, out.width='100%'------------------------------------------------------------
+## ----mvmix_post_prob, fig.width=5, fig.height=5, out.width='100%'-----------------------------------
 post.df2 <- cbind(mvmixmdl$x, mvmixmdl$posterior) %>% 
   as.data.frame() %>% 
   rename(
@@ -675,18 +693,18 @@ ggplot(post.df2, aes(x=ABETA, y=TAU, color=`Prob. Abnormal`)) +
   theme(legend.position=c(0.85, 0.82))
 
 
-## ----mvmix_density, fig.width=5, fig.height=5, out.width='100%'--------------------------------------------------------------
+## ----mvmix_density, fig.width=5, fig.height=5, out.width='100%'-------------------------------------
 plot(mvmixmdl, density = TRUE, alpha = c(0.01, 0.05, 0.10), 
   marginal = FALSE, whichplots=3, main2='', 
   xlab2='ABETA', ylab2='TAU',
   col2=c("#D55E00", "#0072B2"))
 
 
-## ----echo=FALSE, fig.align='center', out.width='60%'-------------------------------------------------------------------------
+## ----echo=FALSE, fig.align='center', out.width='60%'------------------------------------------------
 knitr::include_graphics("./images/moe.png")
 
 
-## ----fig.height=5.9, fig.width=13--------------------------------------------------------------------------------------------
+## ----fig.height=5.9, fig.width=13-------------------------------------------------------------------
 moedata <- dd %>%
   filter(DX!='MCI' & ABETA<1700) %>% 
   select(AGE, APOE4, ABETA, TAU, ADAS13) %>%
@@ -705,18 +723,18 @@ plot(moe23, what="gpairs", jitter=TRUE)
 # with(moedata, plot(moe23, what="gating", x.axis=APOE4, xlab="APOE4"))
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 dd2 <- subset(ADNIMERGE::adnimerge, VISCODE=='bl' & !is.na(Hippocampus) & DX=='CN') %>%
   mutate(
    APOEe4 = ifelse(APOE4>0, 1, 0),
    Sex = factor(PTGENDER, levels = c('Male', 'Female')))
 
 
-## ----echo=TRUE---------------------------------------------------------------------------------------------------------------
+## ----echo=TRUE--------------------------------------------------------------------------------------
 lm_fit1_sex <- lm(I(Hippocampus/ICV*100) ~ Sex, data=dd2)
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 summary(lm_fit1_sex)$coef %>%
   as_tibble(rownames = NA) %>% 
   rownames_to_column(var='Coefficient') %>%
@@ -724,11 +742,11 @@ summary(lm_fit1_sex)$coef %>%
   kable()
 
 
-## ----echo=TRUE---------------------------------------------------------------------------------------------------------------
+## ----echo=TRUE--------------------------------------------------------------------------------------
 lm_fit2_sex <- lm(Hippocampus ~ ICV + Sex, data=dd2)
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 summary(lm_fit2_sex)$coef %>%
   as_tibble(rownames = NA) %>% 
   rownames_to_column(var='Coefficient') %>%
@@ -736,7 +754,7 @@ summary(lm_fit2_sex)$coef %>%
   kable()
 
 
-## ----hipp_sex_scatter, fig.height=4, fig.width=6-----------------------------------------------------------------------------
+## ----hipp_sex_scatter, fig.height=4, fig.width=6----------------------------------------------------
 ggplot(dd2, aes(y=Hippocampus, x=ICV, color=Sex)) +
   geom_point(alpha=0.5) +
   geom_smooth(method='lm') +
@@ -745,7 +763,7 @@ ggplot(dd2, aes(y=Hippocampus, x=ICV, color=Sex)) +
   theme(legend.position = c(0.2, 0.8))
 
 
-## ----hipp_sex_box, fig.height=4, fig.width=4*2-------------------------------------------------------------------------------
+## ----hipp_sex_box, fig.height=4, fig.width=4*2------------------------------------------------------
 p1 <- ggplot(dd2, aes(y=Hippocampus, x=Sex)) +
   geom_boxplot(outlier.shape=NA) +
   geom_dotplot(binaxis='y', stackdir='center', 
@@ -774,7 +792,7 @@ p4 <- ggplot(dd2,
 grid.arrange(p1,p2,p3,p4, nrow=1)
 
 
-## ----hipp_adj_sex_scatter, fig.height=4, fig.width=6-------------------------------------------------------------------------
+## ----hipp_adj_sex_scatter, fig.height=4, fig.width=6------------------------------------------------
 ggplot(dd2, 
   aes(y=Hippocampus-ICV*coef(lm_fit2_sex)['ICV'], x=ICV, color=Sex)) +
   geom_point(alpha=0.5) +
@@ -784,7 +802,7 @@ ggplot(dd2,
   theme(legend.position = c(0.2, 0.8))
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 ggplot() + 
   geom_segment(aes(x=1.009, y=0, xend=2.076, yend=100),
     arrow = arrow(length = unit(0.03, "npc"), ends='both')) +
@@ -801,7 +819,7 @@ ggplot() +
 
 
 
-## ----echo=FALSE--------------------------------------------------------------------------------------------------------------
+## ----echo=FALSE-------------------------------------------------------------------------------------
 pibids <- unique(subset(ADNIMERGE::adnimerge, !is.na(PIB))$RID)
 av45ids <- unique(subset(ADNIMERGE::adnimerge, !is.na(AV45))$RID)
 set.seed(20210506)
@@ -826,7 +844,7 @@ ggplot(dd, aes(x=SUVR)) +
   facet_grid(.~Tracer, scales='free_x')
 
 
-## ----echo=FALSE--------------------------------------------------------------------------------------------------------------
+## ----echo=FALSE-------------------------------------------------------------------------------------
 t1 <- with(dd, table(DX, Tracer))
 t2 <- round(with(dd, prop.table(table(DX, Tracer), margin = 2))*100, 1)
 tt <- t1
@@ -835,12 +853,12 @@ tt[,2] <- paste(t1[,2], paste0("(", t2[,2], "%)"))
 kable(tt)
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 invproptab <- 1/with(dd, prop.table(table(DX, Tracer), margin = 2))
 kable(invproptab)
 
 
-## ----echo=TRUE---------------------------------------------------------------------------------------------------------------
+## ----echo=TRUE--------------------------------------------------------------------------------------
 # Record the sampling adjustment weights in the data
 dd <- dd %>% mutate(
   wt = case_when(
@@ -853,7 +871,7 @@ dd <- dd %>% mutate(
   ))
 
 
-## ----echo=FALSE--------------------------------------------------------------------------------------------------------------
+## ----echo=FALSE-------------------------------------------------------------------------------------
 ecdf.func <- function(x, weights=NULL, 
   type=c('i/n','(i-1)/(n-1)','i/(n+1)'), 
   normwt=TRUE, na.rm=TRUE,
@@ -879,7 +897,7 @@ inv.ecdf <- function(x, weights = NULL, probs = seq(0,1,by=0.01),
 }
 
 
-## ----echo=TRUE---------------------------------------------------------------------------------------------------------------
+## ----echo=TRUE--------------------------------------------------------------------------------------
 # Create adjusted ECDF functions (mapping SUVRs to Cumulative Probabilities)
 # Hmisc::wtd.Ecdf returns a data.frame evaluating the ECDF at each observed value
 PiB.ecdf <- with(subset(dd, Tracer == 'PiB'), ecdf.func(SUVR, weights=wt))
@@ -893,7 +911,7 @@ Fbp.inv.ecdf <- with(subset(dd, Tracer == 'Florbetapir'),
  inv.ecdf(SUVR, weights=wt))
 
 
-## ----echo=TRUE---------------------------------------------------------------------------------------------------------------
+## ----echo=TRUE--------------------------------------------------------------------------------------
 dd <- dd %>% mutate(
   `Adjusted cumulative probability` = case_when( # 
     Tracer == 'PiB' ~ PiB.ecdf(SUVR),
@@ -908,7 +926,7 @@ dd <- dd %>% mutate(
   arrange(Tracer, SUVR)
 
 
-## ----weighted-ecdfs----------------------------------------------------------------------------------------------------------
+## ----weighted-ecdfs---------------------------------------------------------------------------------
 ggplot(dd, aes(x=SUVR)) +
   stat_ecdf(geom = "step") +
   facet_grid(.~Tracer, scales='free_x') +
@@ -916,14 +934,14 @@ ggplot(dd, aes(x=SUVR)) +
   ylab('Cumulative Probability')
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 dd %>% filter(Tracer == 'PiB') %>%
   ggplot(aes(x=CL, y=`Adjusted cumulative probability`)) +
   geom_line() +
   geom_point()
 
 
-## ----pib-densities-----------------------------------------------------------------------------------------------------------
+## ----pib-densities----------------------------------------------------------------------------------
 dd %>% select(RID, DX, Tracer, SUVR, `Florbetapir to PiB adjusted SUVR`) %>%
   pivot_longer(c('SUVR', 'Florbetapir to PiB adjusted SUVR'), 
     names_to = 'Source', values_to = 'SUVR') %>%
@@ -935,7 +953,7 @@ ggplot(aes(x=SUVR, color=Source)) +
   geom_density(alpha=0.5)
 
 
-## ----pib-densities-dx--------------------------------------------------------------------------------------------------------
+## ----pib-densities-dx-------------------------------------------------------------------------------
 dd %>% select(RID, DX, Tracer, SUVR, `Florbetapir to PiB adjusted SUVR`) %>%
   pivot_longer(c('SUVR', 'Florbetapir to PiB adjusted SUVR'), 
     names_to = 'Source', values_to = 'SUVR') %>%
@@ -948,7 +966,7 @@ ggplot(aes(x=SUVR, color=Source)) +
   facet_grid(.~DX)
 
 
-## ----z-score-densities-------------------------------------------------------------------------------------------------------
+## ----z-score-densities------------------------------------------------------------------------------
 ggplot() +
   geom_rug(data = subset(dd, Tracer == 'Florbetapir'), 
     aes(x=`Adjusted Z-score`, color = Tracer), alpha=0.5) +
@@ -961,7 +979,7 @@ ggplot() +
 
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 dd.validate <- full_join(
   ADNIMERGE::adnimerge %>% 
     arrange(RID, EXAMDATE) %>% 
@@ -1017,7 +1035,7 @@ ggplot(fbb2pib_navitsky, aes(x=PiB, y=`Estimated PiB SUVR`)) +
   geom_vline(xintercept = 1.5, linetype='dashed')
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 pib2fbb_navitsky <- dd.validate %>%
   select(RID, `Years between scans`, Florbetapir, 
     `Navitsky et al linear map of PiB to Florbetapir`,
@@ -1043,7 +1061,7 @@ ggplot(pib2fbb_navitsky, aes(x=Florbetapir, y=`Estimated Florbetapir SUVR`)) +
   geom_vline(xintercept = 1.11, linetype='dashed')
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 fbb2pib_royse <- dd.validate %>%
   select(RID, `Years between scans`, PiB, 
     `Royse et al linear map of Florbetapir to PiB`,
@@ -1069,7 +1087,7 @@ ggplot(fbb2pib_royse, aes(x=PiB, y=`Estimated PiB SUVR`)) +
   geom_vline(xintercept = 1.5, linetype='dashed')
 
 
-## ----------------------------------------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------
 pib2fbb_royse <- dd.validate %>%
   select(RID, `Years between scans`, Florbetapir, 
     `Royse et al linear map of PiB to Florbetapir`,
@@ -1093,4 +1111,88 @@ ggplot(pib2fbb_royse, aes(x=Florbetapir, y=`Estimated Florbetapir SUVR`)) +
   geom_text(data=pib2fbb_royse_RMSE, aes(label=text)) +
   geom_hline(yintercept = 1.11, linetype='dashed') +
   geom_vline(xintercept = 1.11, linetype='dashed')
+
+
+
+
+
+
+## ----prep-data-for-combat, echo = FALSE-------------------------------------------------------------
+dd.combat <- ADNIMERGE::adnimerge %>%
+  arrange(RID, EXAMDATE) %>%
+  mutate(Age = AGE + Years.bl) %>%
+  select(RID, APOE4, Age, DX, MMSE, PIB, AV45, FBB) %>%
+  group_by(RID) %>%
+  fill(APOE4, DX, Age, MMSE, .direction = "downup") %>%
+  mutate(across(PIB:FBB, as.numeric)) %>%
+  pivot_longer(PIB:FBB, names_to = 'Tracer', values_to = 'SUVR') %>%
+  filter(!is.na(SUVR) & !is.na(APOE4) & !is.na(DX) & !is.na(Age)) %>%
+  mutate(
+    log.SUVR = log(SUVR),
+    Tracer = factor(Tracer, levels = c('PIB', 'AV45', 'FBB')),
+    APOE4 = factor(APOE4, levels = 0:2))
+
+
+## ----fit-model-for-combat---------------------------------------------------------------------------
+combat.fit <- lme(log.SUVR ~ Tracer + APOE4 + DX + Age + MMSE, dd.combat,
+  random = ~1|RID, weights = varIdent(form = ~ 1 | Tracer))
+
+
+## ----echo = FALSE-----------------------------------------------------------------------------------
+printCoefmat(summary(combat.fit)$tTable)
+
+
+## ----echo = FALSE-----------------------------------------------------------------------------------
+print(summary(combat.fit$modelStruct), digits = 4)
+
+
+## ----echo = TRUE------------------------------------------------------------------------------------
+dd.combat$fitted_log.SUVR <- predict(combat.fit) %>% as.numeric()
+
+dd.combat$pred_log.SUVR_PiB <- predict(combat.fit, 
+  newdata = dd.combat %>% mutate(Tracer = "PIB")) %>% as.numeric()
+
+
+## ----echo = TRUE------------------------------------------------------------------------------------
+(sdWeights <- coef(combat.fit$modelStruct$varStruct, unconstrained = FALSE))
+dd.combat <- dd.combat %>% 
+  mutate(
+    resids = log.SUVR - fitted_log.SUVR,
+    homog_resids = case_when(
+      Tracer == 'PIB' ~ resids,
+      Tracer == 'AV45' ~ resids * sdWeights['PIB'] ,
+      Tracer == 'FBB' ~ resids * sdWeights['PIB'] / sdWeights['FBB']),
+    ComBat_log.SUVR_PiB = homog_resids + pred_log.SUVR_PiB,
+    fitted_SUVR = exp(fitted_log.SUVR),
+    ComBat_SUVR_PiB = exp(ComBat_log.SUVR_PiB))
+
+
+## ----echo = FALSE-----------------------------------------------------------------------------------
+dd.combat %>% group_by(Tracer) %>%
+  summarise(
+    `SD of homog_resids` = sd(homog_resids),
+    `SD of resids` = sd(resids))
+
+
+## ---------------------------------------------------------------------------------------------------
+ggplot(dd.combat, aes(x = SUVR, y =ComBat_SUVR_PiB, color = Tracer)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  xlab('Original SUVR') + ylab('ComBat SUVR') +
+  scale_x_continuous(transform = 'log') +
+  scale_y_continuous(transform = 'log')
+
+
+## ----fig.height=5, fig.width=5*2.2------------------------------------------------------------------
+p1 <- ggplot(dd.combat, aes(x = SUVR)) + 
+  geom_density(aes(fill = Tracer, color = Tracer), alpha = 0.2) +
+  scale_x_continuous(transform = 'log', limits = c(0.8,3)) +
+  theme(legend.position = 'inside', legend.position.inside = c(0.9, 0.7)) +
+  xlab('Original SUVR')
+p2 <- ggplot(dd.combat, aes(x = ComBat_SUVR_PiB)) + 
+  geom_density(aes(fill = Tracer, color = Tracer), alpha = 0.2) +
+  scale_x_continuous(transform = 'log', limits = c(0.8,3)) +
+  theme(legend.position = 'none') + 
+  xlab('ComBat SUVR')
+grid.arrange(p1,p2,nrow=2)
 

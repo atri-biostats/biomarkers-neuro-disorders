@@ -122,7 +122,8 @@ bib <- ReadBib("./references.bib", check = FALSE)
 NoCite(bib, c('calibFit', 'davidian1990', 'Youden', 'pROC', 'ctree', 
   'breiman2001', 'hothorn2006', 'mixtools', 'murphy2020gaussian', 
   'properzi2019nonlinear', 'rowe201718', 'klunk2015centiloid', 
-  'navitsky2018standardization', 'royse2021validation', 'li2019bayesian'))
+  'navitsky2018standardization', 'royse2021validation', 'li2019bayesian',
+  'johnson2007adjusting', 'beer2020longitudinal'))
 # Citet(), Citep(), AutoCite()
 ```
 
@@ -708,7 +709,7 @@ plot(cal.fpl.pom,print=FALSE,main = "ELISA fit with POM",xlab = "Concentration",
 
 ---
 
-# Calibrated Estimates & Minimum Detectable Concentration (MCD) for Each Sample
+# Calibrated Estimates & Minimum Detectable Concentration (MDC) for Each Sample
 
 .pull-left[
 
@@ -873,6 +874,8 @@ plot(roc_2, add=TRUE, col='orange', print.thres="best",
 ]
 
 .pull-right[
+
+AUC is a somewhat crude metric of classification accuracy.
 
 AUC1 = AUC2 = `r roc_1$auc` in this case, with 95% CI ( `r ci(roc_1)[c(1,3)]` )
 
@@ -2111,6 +2114,116 @@ knitr::include_graphics("./images/Royse_2021_Fig2_zoom.png")
 ]
 
 From `r Citet(bib=bib, 'royse2021validation')`
+
+---
+
+# ComBat Step 1: Estimate effect of tracer on mean & variance
+
+```{r prep-data-for-combat, echo = FALSE}
+dd.combat <- ADNIMERGE::adnimerge %>%
+  arrange(RID, EXAMDATE) %>%
+  mutate(Age = AGE + Years.bl) %>%
+  select(RID, APOE4, Age, DX, MMSE, PIB, AV45, FBB) %>%
+  group_by(RID) %>%
+  fill(APOE4, DX, Age, MMSE, .direction = "downup") %>%
+  mutate(across(PIB:FBB, as.numeric)) %>%
+  pivot_longer(PIB:FBB, names_to = 'Tracer', values_to = 'SUVR') %>%
+  filter(!is.na(SUVR) & !is.na(APOE4) & !is.na(DX) & !is.na(Age)) %>%
+  mutate(
+    log.SUVR = log(SUVR),
+    Tracer = factor(Tracer, levels = c('PIB', 'AV45', 'FBB')),
+    APOE4 = factor(APOE4, levels = 0:2))
+```
+
+```{r fit-model-for-combat}
+combat.fit <- lme(log.SUVR ~ Tracer + APOE4 + DX + Age + MMSE, dd.combat,
+  random = ~1|RID, weights = varIdent(form = ~ 1 | Tracer))
+```
+
+Outcome is (natural) $\log(\textrm{SUVR})$
+
+```{r echo = FALSE}
+printCoefmat(summary(combat.fit)$tTable)
+```
+
+`r Citet(bib=bib, c('johnson2007adjusting', 'beer2020longitudinal'))`
+
+---
+
+# ComBat Step 1: Estimate effect of tracer on mean & variance
+
+```{r echo = FALSE}
+print(summary(combat.fit$modelStruct), digits = 4)
+```
+
+---
+
+# ComBat Step 2: Get fitted values and prediction assuming PiB
+
+```{r, echo = TRUE}
+dd.combat$fitted_log.SUVR <- predict(combat.fit) %>% as.numeric()
+
+dd.combat$pred_log.SUVR_PiB <- predict(combat.fit, 
+  newdata = dd.combat %>% mutate(Tracer = "PIB")) %>% as.numeric()
+```
+
+---
+
+# ComBat Step 3: Get residuals, and rescale them to PiB scale
+
+```{r, echo = TRUE}
+(sdWeights <- coef(combat.fit$modelStruct$varStruct, unconstrained = FALSE))
+dd.combat <- dd.combat %>% 
+  mutate(
+    resids = log.SUVR - fitted_log.SUVR,
+    homog_resids = case_when(
+      Tracer == 'PIB' ~ resids,
+      Tracer == 'AV45' ~ resids * sdWeights['PIB'] ,
+      Tracer == 'FBB' ~ resids * sdWeights['PIB'] / sdWeights['FBB']),
+    ComBat_log.SUVR_PiB = homog_resids + pred_log.SUVR_PiB,
+    fitted_SUVR = exp(fitted_log.SUVR),
+    ComBat_SUVR_PiB = exp(ComBat_log.SUVR_PiB))
+```
+
+ComBat is the sum of predicted values and residuals "homogenized" to PiB
+
+```{r, echo = FALSE}
+dd.combat %>% group_by(Tracer) %>%
+  summarise(
+    `SD of homog_resids` = sd(homog_resids),
+    `SD of resids` = sd(resids))
+```
+
+---
+
+# ComBat results
+
+```{r}
+ggplot(dd.combat, aes(x = SUVR, y =ComBat_SUVR_PiB, color = Tracer)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  xlab('Original SUVR') + ylab('ComBat SUVR') +
+  scale_x_continuous(transform = 'log') +
+  scale_y_continuous(transform = 'log')
+```
+
+---
+
+# ComBat results
+
+```{r, fig.height=5, fig.width=5*2.2}
+p1 <- ggplot(dd.combat, aes(x = SUVR)) + 
+  geom_density(aes(fill = Tracer, color = Tracer), alpha = 0.2) +
+  scale_x_continuous(transform = 'log', limits = c(0.8,3)) +
+  theme(legend.position = 'inside', legend.position.inside = c(0.9, 0.7)) +
+  xlab('Original SUVR')
+p2 <- ggplot(dd.combat, aes(x = ComBat_SUVR_PiB)) + 
+  geom_density(aes(fill = Tracer, color = Tracer), alpha = 0.2) +
+  scale_x_continuous(transform = 'log', limits = c(0.8,3)) +
+  theme(legend.position = 'none') + 
+  xlab('ComBat SUVR')
+grid.arrange(p1,p2,nrow=2)
+```
 
 ---
 
