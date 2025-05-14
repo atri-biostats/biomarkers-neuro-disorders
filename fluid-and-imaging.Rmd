@@ -53,6 +53,7 @@ library(emmeans)
 library(arsenal)
 library(mvtnorm)
 library(mice)
+xfun::pkg_load2("gifski")
 
 options(digits=2)
 
@@ -567,7 +568,7 @@ If the standard deviation is not actually constant (*heteroscedastic*), estimate
 
 ## Ordinary Least Squares: minimizing the sum of squared residuals
 
-```{r regression-movie, fig.show='animate', dev='jpeg'}
+```{r, animation.hook="gifski", dev='png'}
 set.seed(20210524)
 X <- rnorm(200, mean = 2, sd = 0.5)
 e <- rnorm(200, mean = 0, sd = 0.5)
