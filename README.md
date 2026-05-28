@@ -1,42 +1,108 @@
+
+
 # Biostatistics for Fluid and Imaging Biomarkers of Neurodegeneration in R
 
-This repository hosts the course materials for the biostatistics module of the [Biomarkers for Neurodegenerative Disorders](https://biomarker-course.org) course Barcelona, Spain, June 1-5, 2026.
+This repository hosts the course materials for the biostatistics module
+of the [Biomarkers for Neurodegenerative
+Disorders](https://biomarker-course.org) course Barcelona, Spain, June
+1-5, 2026.
 
-Statistical and visualization techniques will be demonstrated using [R](https://www.r-project.org/) applied to data from the [Alzheimer's Disease Neuroimaging Initiative (ADNI)](http://adni.loni.usc.edu/). If you would like to execute the R code on your own machine, you should [apply for access](http://adni.loni.usc.edu/data-samples/access-data/) to ADNI and [download and install the ADNIMERGE2 R package](https://adni.loni.usc.edu/wp-content/uploads/2012/08/instruction-ADNIMERGE-packages.pdf).
+Statistical and visualization techniques will be demonstrated using
+[R](https://www.r-project.org/) applied to data from the from the
+**Anti-Amyloid Treatment in Asymptomatic Alzheimer’s (A4) trial** and
+the **Longitudinal Evaluation of Amyloid Risk and Neurodegeneration
+(LEARN)** study and `A4LEARN` `R` package (ATRI Biostatistics 2025).
 
-[RStudio](https://rstudio.com/products/rstudio/) is also highly recommended.
+If you would like to follow along with the course materials, please
+obtain and install:
 
-The biostatistics module topics include:
+1.  [`R`](https://cran.r-project.org) and
+    [RStudio](https://posit.co/download/rstudio-desktop)
+2.  The [`A4LEARN`](https://www.a4studydata.org/) package and data.
+3.  Other packages (see below)
+4.  The course slides and code examples (coming soon here)
 
-## Part 1. Framing and data setup (10 min)
+# `A4LEARN`
 
-* Biomarker types and study questions
-* Brief ADNIMERGE2 orientation
-* Minimal data setup in R
+`A4LEARN` is an R study package (Donohue et al. 2026) that bundles
 
-## Part 2. Fluid biomarkers: cross-sectional analysis (20 min)
+- data,
+- documentation, and
+- reproducible analysis examples.
 
-* Batch effects
-* Logistic regression for classification
-* Univariate mixture model for biomarker status
+To obtain and install `A4LEARN`:
 
-## Part 3. Imaging biomarkers: scaling and interpretation (20 min)
+- Register at <https://www.a4studydata.org/> or
+  <https://www.synapse.org/a4_learn_datasharing/>
+- Download `A4LEARN_1.1.20250808.tar.gz` from the preferred data sharing
+  platform
+- In R, run
+  `install.packages("path/to/A4LEARN_1.1.20250808.tar.gz", repos = NULL, type = "source")`
 
-* Reference regions
-* Centiloids
-* ECDF standardization
-* A regression example
+# Other `R` packages
 
-## Part 4. Longitudinal analysis (30 min)
+``` r
+# Installs packages needed for the A4LEARN / biomarker statistics workshop.
 
-* Longitudinal summaries and plots
-* Mixed effects models
-* MMRM vs cLDA overview
-* Missing data assumptions
+cran_packages <- c(
+  "tidyverse",
+  "arsenal",
+  "kableExtra",
+  "nlme",
+  "emmeans",
+  "clubSandwich",
+  "broom",
+  "mixtools",
+  "patchwork",
+  "reactable",
+  "mmrm",
+  "BiocManager" # for sva::ComBat batch correction
+)
 
-## Part 5. Wrap-up (10 min)
+for(pkg in cran_packages){
+  # check if package is installed, and if not, install it from CRAN
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg, repos = "https://cloud.r-project.org")
+  }
+}
 
-* Decision framework
-* Common pitfalls
-* Backup slide topics for discussion
+# for sva::ComBat batch correction
+if (!requireNamespace("sva", quietly = TRUE)){
+  BiocManager::install("sva")
+}
+```
 
+## The 90 minute course plan
+
+- **0 to 10 min**: orientation and A4LEARN setup
+- **10 to 30 min**: technical artifacts, baseline biomarker summaries,
+  visualization
+- **30 to 50 min**: imaging biomarker interpretation and standardization
+  using amyloid PET (CL)
+- **50 to 80 min**: longitudinal PACC trajectories and mixed effects
+  models
+- **80 to 90 min**: synthesis and decision framework
+
+# References
+
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+
+<div id="ref-A4LEARN" class="csl-entry">
+
+ATRI Biostatistics. 2025. *A4LEARN: A4LEARN Study Package*.
+<https://www.a4studydata.org>.
+
+</div>
+
+<div id="ref-donohue2026alzverse" class="csl-entry">
+
+Donohue, Michael C, Kedir Hussen, Oliver Langford, Richard Gallardo,
+Gustavo Jimenez-Maggiora, Paul S Aisen, and Alzheimer’s Disease
+Neuroimaging Initiative. 2026. “<span class="nocase">Alzheimer’s
+clinical research data via R packages: The alzverse</span>.”
+*Alzheimer’s & Dementia* 22 (2): e71152.
+
+</div>
+
+</div>

@@ -82,9 +82,9 @@ mean_ci <- function(x) {
 
 ## Goals for today
 
--   Build one practical workflow for **technical artifacts and baseline biomarker modeling**
--   Build one practical workflow for **imaging biomarkers**
--   Build one practical workflow for **longitudinal cognition**
+-   Strategies for **technical artifacts and baseline biomarker modeling**
+-   Strategies for **imaging biomarkers**
+-   Strategies for **longitudinal cognition**
 -   Keep the focus on **interpretation**, **visualization**, and **analysis decisions**
 
 ::: notes
@@ -179,6 +179,7 @@ ADQS_PACC <- A4LEARN::ADQS |>
     Week = case_when(
       as.numeric(AVISIT) < 200 ~ as.numeric(AVISIT)*4 - 24,
       TRUE ~ NA)) |> 
+  filter(!is.na(Group)) |>
   left_join(V1.6PTAU217, by = "BID")
 
 BASE_PACC <- ADQS_PACC |>

@@ -1,0 +1,230 @@
+/*-- scss:defaults --*/
+
+/* =========================
+   ATRI / USC color system
+   ========================= */
+
+/* Official USC colors (web-safe hex) */
+$usc-cardinal: #990000;
+$usc-gold: #ffcc00;
+
+/* Supporting neutrals used on ATRI pages */
+$usc-dark-gray: #293035;
+$usc-mid-gray: #53616a;
+$usc-light-gray: #ededed;
+$usc-border-gray: #d9d9d9;
+
+/* Base document colors */
+$body-bg: #ffffff;
+$body-color: #1f1f1f;
+$link-color: $usc-cardinal;
+$link-color-hover: darken($usc-cardinal, 10%);
+
+/* Typography */
+$font-family-sans-serif: "Aptos", "Segoe UI", "Calibri", "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace: "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+
+$presentation-font-size-root: 32px;
+$presentation-line-height: 1.35;
+
+$presentation-heading-font: $font-family-sans-serif;
+$presentation-heading-color: $usc-cardinal;
+$presentation-heading-line-height: 1.15;
+$presentation-heading-letter-spacing: normal;
+$presentation-heading-text-transform: none;
+
+$presentation-h1-font-size: 2.0em;
+$presentation-h2-font-size: 1.45em;
+$presentation-h3-font-size: 1.1em;
+$presentation-h4-font-size: 0.95em;
+
+/* Code blocks */
+$code-block-bg: #f7f7f7;
+
+/*-- scss:rules --*/
+
+/* =========================
+   Global layout
+   ========================= */
+.reveal {
+  color: $body-color;
+  font-size: 32px;
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal p,
+.reveal li {
+  line-height: 1.35;
+}
+
+.reveal strong {
+  color: $usc-cardinal;
+  font-weight: 700;
+}
+
+/* =========================
+   Headings
+   ========================= */
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  font-family: $font-family-sans-serif;
+  text-transform: none;
+}
+
+.reveal h1 {
+  color: $usc-cardinal;
+  font-weight: 700;
+  margin-bottom: 0.35em;
+}
+
+.reveal h2 {
+  color: $usc-cardinal;
+  font-weight: 700;
+  margin-bottom: 0.3em;
+}
+
+.reveal h3 {
+  color: $usc-mid-gray;
+  font-weight: 650;
+}
+
+.reveal h4 {
+  color: $usc-mid-gray;
+  font-weight: 600;
+}
+
+/* =========================
+   Title slide
+   ========================= */
+.reveal .title-slide {
+  padding-top: 1.4em;
+}
+
+.reveal .title-slide h1 {
+  font-size: 2.1em;
+}
+
+.reveal .title-slide .subtitle {
+  color: $usc-mid-gray;
+  font-size: 0.95em;
+  margin-top: 0.4em;
+}
+
+/* Gold accent rule, echoing ATRI site section dividers */
+.reveal .title-slide::before {
+  content: "";
+  display: block;
+  width: 160px;
+  height: 6px;
+  background: $usc-gold;
+  border-radius: 4px;
+  margin-bottom: 1.1em;
+}
+
+/* =========================
+   Lists
+   ========================= */
+.reveal ul li::marker,
+.reveal ol li::marker {
+  color: $usc-cardinal;
+}
+
+.reveal ul li,
+.reveal ol li {
+  margin-bottom: 0.25em;
+}
+
+/* =========================
+   Links
+   ========================= */
+.reveal a,
+.reveal a:visited {
+  color: $usc-cardinal;
+  text-decoration: none;
+}
+
+.reveal a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   Code
+   ========================= */
+.reveal pre {
+  background: $code-block-bg;
+  border: 1px solid $usc-border-gray;
+  border-radius: 6px;
+}
+
+.reveal pre code {
+  font-family: $font-family-monospace;
+  font-size: 0.72em;
+  line-height: 1.25;
+}
+
+.reveal code {
+  background: rgba(153, 0, 0, 0.06);
+  color: $usc-cardinal;
+  padding: 0.08em 0.22em;
+  border-radius: 4px;
+}
+
+/* =========================
+   Tables
+   ========================= */
+.reveal table {
+  font-size: 0.72em;
+  border-collapse: collapse;
+}
+
+.reveal table th {
+  background: $usc-cardinal;
+  color: #ffffff;
+  font-weight: 650;
+  padding: 0.45em 0.55em;
+}
+
+.reveal table td {
+  border: 1px solid $usc-border-gray;
+  padding: 0.4em 0.55em;
+}
+
+.reveal table tr:nth-child(even) td {
+  background: $usc-light-gray;
+}
+
+/* =========================
+   Blockquotes / callouts
+   ========================= */
+.reveal blockquote {
+  border-left: 6px solid $usc-gold;
+  background: #fafafa;
+  padding: 0.6em 0.9em;
+  margin: 0.8em 0;
+}
+
+/* =========================
+   Footer
+   ========================= */
+.reveal .footer {
+  font-size: 0.5em;
+  color: $usc-mid-gray;
+}
+
+/* =========================
+   Utility classes
+   ========================= */
+.small { font-size: 0.82em; }
+.smaller { font-size: 0.72em; }
+.muted { color: $usc-mid-gray; }
+.center { text-align: center; }
+
+/* Scrollable slides */
+.reveal .scrollable {
+  overflow-y: auto;
+}
