@@ -20,7 +20,8 @@ obtain and install:
     [RStudio](https://posit.co/download/rstudio-desktop)
 2.  The [`A4LEARN`](https://www.a4studydata.org/) package and data.
 3.  Other packages (see below)
-4.  The course slides and code examples (coming soon here)
+4.  The course slides and code examples (`.R`, `.qmd` files) from this
+    repository.
 
 # `A4LEARN`
 

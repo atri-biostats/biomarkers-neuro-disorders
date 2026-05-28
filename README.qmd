@@ -15,7 +15,7 @@ If you would like to follow along with the course materials, please obtain and i
 1. [`R`](https://cran.r-project.org) and [RStudio](https://posit.co/download/rstudio-desktop)
 2. The [`A4LEARN`](https://www.a4studydata.org/) package and data.
 3. Other packages (see below)
-4. The course slides and code examples (coming soon here)
+4. The course slides and code examples (`.R`, `.qmd` files) from this repository.
 
 # `A4LEARN`
 
