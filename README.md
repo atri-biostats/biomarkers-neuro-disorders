@@ -1,39 +1,109 @@
-# Biomarkers for Neurodegenerative Disorders
 
-This repository hosts the course materials for the biostatistics module of the [Biomarkers for Neurodegenerative Disorders](https://biomarker-course.org/) course in London, UK, May 12 to 16 2025.
 
-Statistical and visualization techniques will be demonstrated using [R](https://www.r-project.org/) applied to data from the [Alzheimer's Disease Neuroimaging Initiative (ADNI)](http://adni.loni.usc.edu/). If you would like to execute the R code on your own machine, you should [apply for access](http://adni.loni.usc.edu/data-samples/access-data/) to ADNI and [download and install the ADNIMERGE R package](https://adni.loni.usc.edu/wp-content/uploads/2012/08/instruction-ADNIMERGE-packages.pdf).
+# Biostatistics for Fluid and Imaging Biomarkers of Neurodegeneration in R
 
-[RStudio](https://rstudio.com/products/rstudio/) is also highly recommended.
+This repository hosts the course materials for the biostatistics module
+of the [Biomarkers for Neurodegenerative
+Disorders](https://biomarker-course.org) course Barcelona, Spain, June
+1-5, 2026.
 
-The biostatistics module topics include:
+Statistical and visualization techniques will be demonstrated using
+[R](https://www.r-project.org/) applied to data from the from the
+**Anti-Amyloid Treatment in Asymptomatic Alzheimer’s (A4) trial** and
+the **Longitudinal Evaluation of Amyloid Risk and Neurodegeneration
+(LEARN)** study and `A4LEARN` `R` package (ATRI Biostatistics 2025).
 
-## Biostatistics for fluid and imaging biomarkers (hour 1, Mike Donohue)
+If you would like to follow along with the course materials, please
+obtain and install:
 
-- Batch Effects
-- Experimental Design (Sample Randomization)
-- Statistical Models for Assay Calibration/Quantification
-- Classification (Supervised Learning)
-  - Logistic Regression
-  - Binary Trees
-  - Random Forest
-- Mixture Modeling (Unsupervised Learning)
-  - Univariate
-  - Bivariate
-  - With covariates (Mixture of Experts)
-- Reference Regions
-- Centiloids
-- Standardization/Harmonization
-  - Empirical Cumulative Distribution Function (ECDF)
-  - ComBat
+1.  [`R`](https://cran.r-project.org) and
+    [RStudio](https://posit.co/download/rstudio-desktop)
+2.  The [`A4LEARN`](https://www.a4studydata.org/) package and data.
+3.  Other packages (see below)
+4.  The course slides and code examples (`.R`, `.qmd` files) from this
+    repository.
 
-## Longitudinal Data (hour 2, Lars Racket)
+# `A4LEARN`
 
-- Mixed effect models
-- Mean & Variance Structure
-- Mixed Model for Repeated Measures (MMRM)
-- Constrained Longitudinal Analysis (cLDA)
-- Model selection strategies
-- Nested random effects
-- Missing Data, MAR, MNAR
-- Multiple Imputation & Delta Method
+`A4LEARN` is an R study package (Donohue et al. 2026) that bundles
+
+- data,
+- documentation, and
+- reproducible analysis examples.
+
+To obtain and install `A4LEARN`:
+
+- Register at <https://www.a4studydata.org/> or
+  <https://www.synapse.org/a4_learn_datasharing/>
+- Download `A4LEARN_1.1.20250808.tar.gz` from the preferred data sharing
+  platform
+- In R, run
+  `install.packages("path/to/A4LEARN_1.1.20250808.tar.gz", repos = NULL, type = "source")`
+
+# Other `R` packages
+
+``` r
+# Installs packages needed for the A4LEARN / biomarker statistics workshop.
+
+cran_packages <- c(
+  "tidyverse",
+  "arsenal",
+  "kableExtra",
+  "nlme",
+  "emmeans",
+  "clubSandwich",
+  "broom",
+  "mixtools",
+  "patchwork",
+  "reactable",
+  "mmrm",
+  "BiocManager" # for sva::ComBat batch correction
+)
+
+for(pkg in cran_packages){
+  # check if package is installed, and if not, install it from CRAN
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg, repos = "https://cloud.r-project.org")
+  }
+}
+
+# for sva::ComBat batch correction
+if (!requireNamespace("sva", quietly = TRUE)){
+  BiocManager::install("sva")
+}
+```
+
+## The 90 minute course plan
+
+- **0 to 10 min**: orientation and A4LEARN setup
+- **10 to 30 min**: technical artifacts, baseline biomarker summaries,
+  visualization
+- **30 to 50 min**: imaging biomarker interpretation and standardization
+  using amyloid PET (CL)
+- **50 to 80 min**: longitudinal PACC trajectories and mixed effects
+  models
+- **80 to 90 min**: synthesis and decision framework
+
+# References
+
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+
+<div id="ref-A4LEARN" class="csl-entry">
+
+ATRI Biostatistics. 2025. *A4LEARN: A4LEARN Study Package*.
+<https://www.a4studydata.org>.
+
+</div>
+
+<div id="ref-donohue2026alzverse" class="csl-entry">
+
+Donohue, Michael C, Kedir Hussen, Oliver Langford, Richard Gallardo,
+Gustavo Jimenez-Maggiora, Paul S Aisen, and Alzheimer’s Disease
+Neuroimaging Initiative. 2026. “<span class="nocase">Alzheimer’s
+clinical research data via R packages: The alzverse</span>.”
+*Alzheimer’s & Dementia* 22 (2): e71152.
+
+</div>
+
+</div>
