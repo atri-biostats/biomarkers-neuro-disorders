@@ -57,6 +57,7 @@ cran_packages <- c(
   "patchwork",
   "reactable",
   "mmrm",
+  "mice",
   "BiocManager" # for sva::ComBat batch correction
 )
 
